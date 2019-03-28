@@ -143,8 +143,16 @@ print_list(table)
 	# to do
 for idx_col in range(len(chars)-1,-1,-1):
 	for idx_row in range(idx_col+1, len(chars), 1):
-		idx_prime = len(chars) + idx_col + idx_row
-		
+		idx_prime = len(chars) + idx_col - idx_row
+		for idx_left_candidate in range(len(table[idx_row][idx_col])):
+			for idx_right_candidate in range(len(table[idx_prime][idx_prime])):
+				left_candidate = table[idx_row][idx_col][idx_left_candidate]
+				left_tag = left_candidate.split('+')[-1].split(':')[1]
+
+				right_candidate = table[idx_prime][idx_prime][idx_right_candidate]
+				right_tag = right_candidate.split('+')[0].split(':')[1]
+				if(left_tag + '\t'+right_tag in connectivity):
+					table[idx_col][idx_col]+=[left_candidate+'+'+idx_right_candidate]
 
 
 print ("cyk table after connectivity checking:")
@@ -152,7 +160,7 @@ print_list(table)
 
 # step6: print result
 print ("result:")
-print(table[0][0])
+print(table[3][0])
 	# to do
 
 
