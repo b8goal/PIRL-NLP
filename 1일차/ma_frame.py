@@ -85,6 +85,13 @@ def print_dict(arg):
 # load dictionary
 dictionary={}
 	# to do
+with open('dictionary','r', encoding='utf-8') as f:
+	for _ in f:
+		key,val = _.split()
+		if key not in dictionary:
+			dictionary[key] = [val]
+		else:
+			dictionary[key].append(val)
 
 print('dictionary:')
 print_dict(dictionary)
@@ -92,6 +99,9 @@ print_dict(dictionary)
 # load connectivity
 connectivity=[]
 	# to do
+with open('connectivity','r', encoding='utf-8') as f:
+	for _ in f:
+		connectivity.append(_)
 
 print('connectivity:')
 print_list(connectivity)
