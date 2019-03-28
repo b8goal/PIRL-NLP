@@ -110,28 +110,49 @@ print_list(connectivity)
 # read user input & syllables->characters
 	# to do
 
+#word = input("input word: ")
+word = '감기는'
+chars = split_syllables(word)
 
 # step3: build CYK table
 # construct empty table with word length
 table=[]
+
 	# to do
+for i in range(len(chars)):
+	table.append([[] for j in range(i+1)])
 
 print ("cyk table initialized:")
 print_list(table)
 
 # step4: morpheme segmentation
 	# to do
+for idx_col in range(len(chars)-1,-1,-1): # backward loop (len-1, len-2, ..., 0)
+	for idx_row in range(len(chars) -1, idx_col-1,-1):
+		# make pseudo syllables by combining the characters
+		key = combine_to_syllables(chars[idx_col:idx_col+(len(chars)-idx_row)])
+		# search dictionary using the pseudo syllables as the key
+		if(key in dictionary.keys()):
+			for value in dictionary[key]:
+				table[idx_row][idx_col]+=[key+":"+value]
 
-print ("cyk table after morpheme segmentation:")
+print("cyk table after morpheme segmentation:")
 print_list(table)
 
 # step5: connectivity check
 	# to do
+for idx_col in range(len(chars)-1,-1,-1):
+	for idx_row in range(idx_col+1, len(chars), 1):
+		idx_prime = len(chars) + idx_col + idx_row
+		
+
 
 print ("cyk table after connectivity checking:")
 print_list(table)
-				
+
 # step6: print result
 print ("result:")
+print(table[0][0])
 	# to do
+
 
