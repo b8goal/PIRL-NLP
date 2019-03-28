@@ -160,7 +160,7 @@ print_list(table)
 
 # step6: print result
 print ("result:")
-print(table[3][0])
+print(table[0][0])
 	# to do
 
 
