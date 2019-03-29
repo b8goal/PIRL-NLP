@@ -49,20 +49,21 @@ def train(corpus):
         trans[(sent[-1][1], 'EOS')] +=1 # number of (tag, EOS) bigram
 
     # obervation (x|y) - emission prob.
-    base = # P(y) for every y (count for each tag)
-    pos2words_ =  # log(p(x, y)/p(y)) for every (x, y)
+    base = {pos:sum(words.values()) for pos, words in pos2words.items()}# P(y) for every y (count for each tag)
+    pos2words_ =  {pos:{word:math.log(count/base[pos]) for word, count in words.items()}
+                   for pos, words in pos2words.items()}# log(p(x, y)/p(y)) for every (x, y)
 
     # p(y_k|p_(k-1)) - transition prob.
     base = defaultdict(int)
     for (pos0, pos1), count in trans.items():
+        base[pos0] += count
 		# p(y_(k-1))
 
-    trans_ = # log P(y_k, y_(k-1))/p(y_(k-1))
+    trans_ = {pos:math.log(count/base[pos[0]]) for pos, count in trans.items()}# log P(y_k, y_(k-1))/p(y_(k-1))
 
     # BOS
     base = sum(bos.values()) # p(BOS)
-    bos_ = # log P(tag|BOS) 
-
+    bos_ = {pos:math.log(count/base) for pos, count in bos.items()}# log P(tag|BOS)
     return pos2words_, trans_, bos_
 
 class HMM_tagger(object):
@@ -75,14 +76,19 @@ class HMM_tagger(object):
 
     def sent_log_prob(self, sent):
         # emission prob.
-        log_prob = # get emission prob. for each (w, t), otherwise unk value
+        log_prob = sum(
+            (self.pos2words.get(t,{}).get(w,self.unk)
+             for w, t in sent))
+        # get emission prob. for each (w, t), otherwise unk value
 
         # bos
         log_prob += bos.get(sent[0][1], self.unk) # get BOS prob for the first (w, t)
 
         # transition prob.
         bigrams = [(t0, t1) for (_, t0), (_, t1) in zip(sent, sent[1:])] # every bigram in sentence
-        log_prob+= # get transition prob. 
+        log_prob+= sum(
+            (self.trans.get(bigram, self.unk)
+             for bigram in bigrams))# get transition prob.
 
         # eos
         log_prob += self.trans.get(
@@ -94,7 +100,7 @@ class HMM_tagger(object):
         return log_prob
 
 
-with open("corpus.ko.tm.full-written.km-tok-pos.dev", "r", encoding='utf-8') as f:
+with open("corpus.txt", "r", encoding='utf-8') as f:
     lines = f.readlines()
 
 corpus = sent_processing(lines)
